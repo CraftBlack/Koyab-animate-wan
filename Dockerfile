@@ -1,4 +1,6 @@
-FROM python:3.10
+# Tahap 1: Gunakan base image resmi NVIDIA CUDA yang sudah memiliki Ubuntu
+# Versi CUDA 12.4.1 adalah yang stabil dan kompatibel dengan PyTorch cu128
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 # Set agar frontend tidak interaktif (menghindari prompt saat instalasi)
 ENV DEBIAN_FRONTEND=noninteractive
@@ -14,12 +16,14 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     rm ~/miniconda.sh
 ENV PATH="/opt/conda/bin:${PATH}"
 
-# Tentukan direktori kerja utama di dalam container
-WORKDIR /app
+# =====================================================================
+# INI BAGIAN YANG DIUBAH: Mengatur direktori kerja menjadi /Wan2GP
+WORKDIR /Wan2GP
+# =====================================================================
 
 # --- Mulai dari sini, alur mengikuti skrip Anda ---
 
-# 1. Clone repository langsung ke dalam direktori kerja (/app)
+# 1. Clone repository langsung ke dalam direktori kerja saat ini (/Wan2GP)
 #    Ini setara dengan 'git clone' dan 'cd'
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git .
 
