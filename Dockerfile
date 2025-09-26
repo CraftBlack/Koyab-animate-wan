@@ -4,10 +4,18 @@ FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 # Set agar frontend tidak interaktif
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependensi dasar
+# =====================================================================
+# INI BAGIAN YANG DIPERBAIKI:
+# Install dependensi dasar DAN dependensi untuk OpenCV/Gradio
 RUN apt-get update && \
-    apt-get install -y git wget bzip2 && \
+    apt-get install -y \
+    git \
+    wget \
+    bzip2 \
+    libgl1-mesa-glx \
+    libglib2.0-0 && \
     rm -rf /var/lib/apt/lists/*
+# =====================================================================
 
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -15,7 +23,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     rm ~/miniconda.sh
 ENV PATH="/opt/conda/bin:${PATH}"
 
-# FIX UNTUK ERROR ToS
+# FIX UNTUK ERROR ToS Anaconda
 RUN conda config --set auto_update_conda false && \
     conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
     conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
@@ -36,8 +44,5 @@ SHELL ["conda", "run", "-n", "wan2gp", "/bin/bash", "-c"]
 RUN pip install torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu128 && \
     pip install -r requirements.txt
 
-# =====================================================================
-# INI BAGIAN YANG DIPERBAIKI: Jalankan perintah di dalam environment conda
-# Ini secara eksplisit memastikan 'python' yang benar yang digunakan saat runtime.
+# Jalankan perintah di dalam environment conda saat container dimulai
 CMD ["conda", "run", "-n", "wan2gp", "python", "wgp.py"]
-# =====================================================================
